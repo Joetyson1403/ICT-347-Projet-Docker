@@ -1,0 +1,40 @@
+name: CI - Qualité et Tests Docker
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Création du fichier .env pour le test
+        run: |
+          echo "DB_HOST=database" >> .env
+          echo "DB_USER=root" >> .env
+          echo "DB_PASSWORD=testpassword" >> .env
+          echo "DB_NAME=app_db" >> .env
+          echo "PORT=3000" >> .env
+
+      - name: Qualité - Linter syntaxique Backend
+        run: node --check backend/server.js
+
+      - name: Construction et lancement des conteneurs
+        run: docker compose up -d --build
+
+      - name: Attente de la disponibilité des services (15s)
+        run: sleep 15
+
+      - name: Exécution du script de test automatisé
+        run: |
+          chmod +x test.sh
+          ./test.sh
+
+      - name: Arrêt des conteneurs
+        if: always()
+        run: docker compose down -v
