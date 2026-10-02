@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Projet 347 - Architecture Conteneurisée</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; text-align: center; }
+    .box { padding: 20px; border: 1px solid #ccc; border-radius: 8px; background: #f9f9f9; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Projet 347 - Docker Compose</h1>
+  <div class="box">
+    <p id="resultat">Chargement des données depuis l'API et MySQL...</p>
+    <button onclick="chargerDonnees()">Ajouter une visite (Tester la persistance)</button>
+  </div>
+  <script>
+    async function chargerDonnees() {
+      try {
+        const res = await fetch('/api');
+        const data = await res.json();
+        document.getElementById('resultat').innerText =
+          data.message + " | Nombre de visites en DB : " + data.visites_enregistrees;
+      } catch (e) {
+        document.getElementById('resultat').innerText = "Erreur de communication avec l'API.";
+      }
+    }
+    chargerDonnees();
+  </script>
+</body>
+</html>
